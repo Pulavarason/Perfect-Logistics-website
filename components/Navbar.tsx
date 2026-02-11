@@ -19,7 +19,7 @@ export default function Navbar() {
   const navLinks = [
     { id: 'home', label: 'Home' },
     { id: 'services', label: 'Services' },
-    { id: 'clients', label: 'Clients' },
+    // { id: 'clients', label: 'Clients' },
     { id: 'about', label: 'About Us' },
     { id: 'contact', label: 'Contact' }
   ];
