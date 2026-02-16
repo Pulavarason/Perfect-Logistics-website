@@ -15,8 +15,6 @@ export default function Contact() {
   const [submitted, setSubmitted] = useState(false);
   const [visibleSections, setVisibleSections] = useState<Set<string>>(new Set());
   const sectionRefs = useRef<{ [key: string]: HTMLElement | null }>({});
-
-
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState('');
 
@@ -50,46 +48,74 @@ export default function Contact() {
     };
   }, []);
   
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setSubmitError('');
 
-const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-  e.preventDefault();
-  setIsSubmitting(true);
-  setSubmitError('');
+    try {
+      // Web3Forms API endpoint
+      const response = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          access_key: '73058a59-660d-4e41-ac7d-df1f06bbd6da',
+          
+          // Form data
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone,
+          company: formData.company || 'Not provided',
+          service: formData.service,
+          message: formData.message,
+          
+          // Professional Email Customization
+          subject: `🔔 New Inquiry from ${formData.name} - ${formData.service}`,
+          from_name: 'Perfect Logistics Website',
+          replyto: formData.email,
+          
+          // Additional metadata for professional email
+          'Submission Time': new Date().toLocaleString('en-IN', { 
+            timeZone: 'Asia/Kolkata',
+            dateStyle: 'full',
+            timeStyle: 'short'
+          }),
+          'Submission Source': 'Website Contact Form',
+          'Customer Email': formData.email,
+          'Customer Phone': formData.phone,
+        }),
+      });
 
-  try {
-    const response = await fetch('/api/contact', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(formData),
-    });
+      const data = await response.json();
 
-    const data = await response.json();
-
-    if (!response.ok) {
-      throw new Error(data.error || 'Failed to submit form');
+      if (data.success) {
+        // Success - Show success message
+        setSubmitted(true);
+        
+        // Reset form
+        setFormData({
+          name: '',
+          email: '',
+          phone: '',
+          company: '',
+          service: '',
+          message: ''
+        });
+        
+        // Hide success message after 5 seconds
+        setTimeout(() => setSubmitted(false), 5000);
+      } else {
+        throw new Error(data.message || 'Failed to submit form');
+      }
+    } catch (error: any) {
+      console.error('Submission error:', error);
+      setSubmitError(error.message || 'Something went wrong. Please try again.');
+    } finally {
+      setIsSubmitting(false);
     }
-
-    // Success
-    setSubmitted(true);
-    setFormData({
-      name: '',
-      email: '',
-      phone: '',
-      company: '',
-      service: '',
-      message: ''
-    });
-    
-    setTimeout(() => setSubmitted(false), 5000);
-  } catch (error: any) {
-    console.error('Submission error:', error);
-    setSubmitError(error.message || 'Something went wrong. Please try again.');
-  } finally {
-    setIsSubmitting(false);
-  }
-};
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     setFormData({
@@ -184,11 +210,125 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         .stagger-1 { transition-delay: 0.1s; }
         .stagger-2 { transition-delay: 0.2s; }
         .stagger-3 { transition-delay: 0.3s; }
+
+        /* Compact Success Toast Animation */
+        @keyframes slideInRight {
+          from {
+            transform: translateX(100%);
+            opacity: 0;
+          }
+          to {
+            transform: translateX(0);
+            opacity: 1;
+          }
+        }
+
+        @keyframes slideOutRight {
+          from {
+            transform: translateX(0);
+            opacity: 1;
+          }
+          to {
+            transform: translateX(100%);
+            opacity: 0;
+          }
+        }
+
+        .success-toast {
+          animation: slideInRight 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .success-toast.hiding {
+          animation: slideOutRight 0.3s ease-in forwards;
+        }
+
+        /* Simple checkmark animation */
+        @keyframes checkmark {
+          0% {
+            stroke-dashoffset: 50;
+          }
+          100% {
+            stroke-dashoffset: 0;
+          }
+        }
+
+        .checkmark-path {
+          stroke-dasharray: 50;
+          stroke-dashoffset: 50;
+          animation: checkmark 0.3s ease-out 0.1s forwards;
+        }
+
+        /* Progress bar */
+        @keyframes progressBar {
+          from {
+            width: 100%;
+          }
+          to {
+            width: 0%;
+          }
+        }
+
+        .progress-bar {
+          animation: progressBar 5s linear forwards;
+        }
       `}</style>
 
       <section id="contact" className="py-20 bg-gradient-to-b from-gray-50 to-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
+          {/* Compact Success Toast - Top Right */}
+          {submitted && (
+            <div className="fixed top-6 right-6 z-50 success-toast max-w-sm">
+              <div className="bg-white rounded-lg shadow-2xl border-l-4 border-green-500 overflow-hidden">
+                <div className="p-4">
+                  <div className="flex items-start space-x-3">
+                    {/* Success Icon */}
+                    <div className="flex-shrink-0">
+                      <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                        <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none">
+                          <circle cx="12" cy="12" r="10" stroke="#10b981" strokeWidth="2" />
+                          <path
+                            className="checkmark-path"
+                            d="M8 12l3 3 5-5"
+                            stroke="#10b981"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                      </div>
+                    </div>
+
+                    {/* Message */}
+                    <div className="flex-1 pt-0.5">
+                      <h4 className="text-sm font-semibold text-gray-900">
+                        Message Sent!
+                      </h4>
+                      <p className="text-xs text-gray-600 mt-0.5">
+                        We'll respond within 24 hours
+                      </p>
+                    </div>
+
+                    {/* Close Button */}
+                    <button
+                      onClick={() => setSubmitted(false)}
+                      className="flex-shrink-0 text-gray-400 hover:text-gray-600 transition-colors"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Progress Bar */}
+                <div className="h-1 bg-gray-100">
+                  <div className="h-full bg-green-500 progress-bar"></div>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Section Header */}
           <div 
             ref={(el) => { sectionRefs.current['header'] = el; }}
@@ -251,11 +391,18 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
                 <h3 className="text-2xl font-bold text-gray-900 mb-6">
                   Send us a Message
                 </h3>
-                
-                {submitted && (
-                  <div className="mb-6 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg animate-fadeIn">
-                    <p className="font-semibold">Thank you for your inquiry!</p>
-                    <p className="text-sm">We'll get back to you within 24 hours.</p>
+
+                {submitError && (
+                  <div className="mb-6 bg-red-50 border-l-4 border-red-500 text-red-700 px-4 py-3 rounded-r-lg shadow-sm">
+                    <div className="flex items-start">
+                      <svg className="w-5 h-5 mr-2 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                      </svg>
+                      <div>
+                        <p className="font-semibold">Error Submitting Form</p>
+                        <p className="text-sm mt-1">{submitError}</p>
+                      </div>
+                    </div>
                   </div>
                 )}
 
@@ -273,6 +420,7 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
                         onChange={handleChange}
                         className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all outline-none"
                         placeholder="Your name"
+                        disabled={isSubmitting}
                       />
                     </div>
 
@@ -288,6 +436,7 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
                         onChange={handleChange}
                         className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all outline-none"
                         placeholder="+91 XXXXX XXXXX"
+                        disabled={isSubmitting}
                       />
                     </div>
                   </div>
@@ -305,6 +454,7 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
                         onChange={handleChange}
                         className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all outline-none"
                         placeholder="your@email.com"
+                        disabled={isSubmitting}
                       />
                     </div>
 
@@ -319,6 +469,7 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
                         onChange={handleChange}
                         className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all outline-none"
                         placeholder="Company name"
+                        disabled={isSubmitting}
                       />
                     </div>
                   </div>
@@ -333,6 +484,7 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
                       value={formData.service}
                       onChange={handleChange}
                       className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all outline-none"
+                      disabled={isSubmitting}
                     >
                       <option value="">Select a service</option>
                       {services.map((service, index) => (
@@ -353,33 +505,38 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
                       rows={5}
                       className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all resize-none outline-none"
                       placeholder="Tell us about your requirements..."
+                      disabled={isSubmitting}
                     ></textarea>
                   </div>
 
-                <button
-  type="submit"
-  disabled={isSubmitting}
-  className={`w-full px-8 py-4 bg-blue-500 text-white font-medium rounded-lg shadow-lg hover:bg-blue-600 hover:shadow-xl transform hover:scale-[1.02] transition-all duration-300 flex items-center justify-center space-x-2 ${
-    isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
-  }`}
->
-                    <span>{isSubmitting ? 'SENDING...' : 'SEND MESSAGE'}</span>
-  {!isSubmitting && (
-    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-    </svg>
-  )}
-</button>
+                  <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className={`w-full px-8 py-4 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-medium rounded-lg shadow-lg hover:from-blue-600 hover:to-blue-700 hover:shadow-xl transform hover:scale-[1.02] transition-all duration-300 flex items-center justify-center space-x-2 ${
+                      isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
+                    }`}
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        <span>SENDING MESSAGE...</span>
+                      </>
+                    ) : (
+                      <>
+                        <span>SEND MESSAGE</span>
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                        </svg>
+                      </>
+                    )}
+                  </button>
 
                   <p className="text-xs text-gray-500 text-center mt-3">
-                    We respond within 24 hours during business days
+                    🔒 Your information is secure. We respond within 24 hours during business days.
                   </p>
-                  {submitError && (
-  <div className="mb-6 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
-    <p className="font-semibold">Error!</p>
-    <p className="text-sm">{submitError}</p>
-  </div>
-)}
                 </form>
               </div>
             </div>
