@@ -1,181 +1,204 @@
 "use client";
 
-import { useState } from 'react';
-
 export default function ClientTicker() {
-  const [isPaused, setIsPaused] = useState(false);
-
   const clients = [
-    { name: "BPCL", fullName: "Bharat Petroleum", domain: "bharatpetroleum.in" },
-    { name: "Shell", fullName: "Shell India Marketing", domain: "shell.co.in" },
-    { name: "Indian Oil", fullName: "Indian Oil Petronas", domain: "iocl.com" },
-    { name: "TCS", fullName: "Tata Consultancy Services", domain: "tcs.com" },
-    { name: "HCL", fullName: "HCL Technologies", domain: "hcltech.com" },
-    { name: "Cognizant", fullName: "Cognizant Technology Solutions", domain: "cognizant.com" },
-    { name: "Cisco", fullName: "Cisco Systems India", domain: "cisco.com" },
-    { name: "Ford", fullName: "Ford India Pvt Ltd", domain: "india.ford.com" },
-    { name: "Airtel", fullName: "Bharti Airtel Limited", domain: "airtel.in" },
-    { name: "Lanco", fullName: "Lanco Infratech Limited", domain: "lancogroup.com" },
-    { name: "Suzlon", fullName: "Suzlon Wind Energy", domain: "suzlon.com" },
-    { name: "DLF", fullName: "DLF Infocity Chennai", domain: "dlf.in" },
-    { name: "ELF Gas", fullName: "ELF Gas India Ltd", domain: "elfgas.in" },
-    { name: "Udupi Power", fullName: "Udupi Power Projects", domain: "udupipower.com" },
-    { name: "Tatsuno", fullName: "Tatsuno India Pvt Ltd", domain: "tatsuno.co.jp" },
-    { name: "Primeware", fullName: "Primeware Logistics", domain: "primeware.in" },
-    { name: "Fly Jac", fullName: "Fly Jac Logistics", domain: "flyjac.in" },
-    { name: "Schenker", fullName: "Schenker India Pvt Ltd", domain: "dbschenker.com" }
+    { name: "Airtel",      logo: "/logos/airtel.jpeg" },
+    { name: "Shell",       logo: "/logos/shell.jpeg" },
+    { name: "Bharath",     logo: "/logos/bharath1.jpeg" },
+    { name: "TCS",         logo: "/logos/tcs.jpeg" },
+    { name: "HCL",         logo: "/logos/hcltech.jpeg" },
+    { name: "Total",       logo: "/logos/total.jpeg" },
+    { name: "Cisco",       logo: "/logos/cisco.jpeg" },
+    { name: "L&T",         logo: "/logos/l&t.jpeg" },
+    { name: "DLF",         logo: "/logos/dlf.jpeg" },
+    { name: "Lanco",       logo: "/logos/lanco.jpeg" },
+    { name: "Schenker",    logo: "/logos/schenker1.jpeg" },
+    { name: "ONGC",        logo: "/logos/ongc.jpeg" },
+    { name: "GAIL",        logo: "/logos/gail.jpeg" },
+    { name: "Indian Oil",  logo: "/logos/indianoil.jpeg" },
+    { name: "Tatsuno",     logo: "/logos/tatsuno.jpeg" },
+    { name: "CCC",         logo: "/logos/ccc.jpeg" },
+    { name: "Fly Jac",     logo: "/logos/flyjac.jpeg" },
+    { name: "Cognizant",   logo: "/logos/cog.jpeg" },
   ];
 
-  // Triple for seamless loop
-  const duplicatedClients = [...clients, ...clients, ...clients];
-
-  // Method 1: Using Clearbit Logo API (free, automatic)
-  const getClearbitLogo = (domain: string) => `https://logo.clearbit.com/${domain}`;
-
-  // Method 2: Using Google S2 Favicon (fallback)
-  const getGoogleFavicon = (domain: string) => `https://www.google.com/s2/favicons?domain=${domain}&sz=128`;
+  const duplicated = [...clients, ...clients];
 
   return (
     <>
       <style jsx>{`
-        * {
-          font-family: -apple-system, BlinkMacSystemFont, "Trebuchet MS", Roboto, Ubuntu, sans-serif;
+        @keyframes ticker-scroll {
+          0%   { transform: translateX(0); }
+          100% { transform: translateX(-50%); }
         }
 
-        @keyframes scroll {
-          0% { transform: translateX(0); }
-          100% { transform: translateX(-33.333%); }
-        }
-
-        @keyframes glow {
-          0%, 100% { box-shadow: 0 0 20px rgba(59, 130, 246, 0.3); }
-          50% { box-shadow: 0 0 30px rgba(59, 130, 246, 0.5); }
-        }
-
-        .ticker-wrapper {
-          overflow: hidden;
-          background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+        .ticker-section {
+          background: #f8fafc;
+          border-top: 1px solid #e2e8f0;
+          border-bottom: 1px solid #e2e8f0;
           position: relative;
-          border-bottom: 2px solid rgba(59, 130, 246, 0.3);
-          border-top: 2px solid rgba(59, 130, 246, 0.3);
+          overflow: hidden;
         }
 
-        .ticker-wrapper::before,
-        .ticker-wrapper::after {
-          content: '';
+        .ticker-header {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 12px;
+          padding: 12px 0 8px;
+        }
+
+        .header-line {
+          flex: 1;
+          max-width: 180px;
+          height: 1px;
+          background: linear-gradient(90deg, transparent, #cbd5e1);
+        }
+        .header-line.right {
+          background: linear-gradient(90deg, #cbd5e1, transparent);
+        }
+
+        .header-label {
+          font-size: 10px;
+          font-weight: 700;
+          letter-spacing: 0.25em;
+          color: #94a3b8;
+          text-transform: uppercase;
+          white-space: nowrap;
+        }
+
+        .ticker-body {
+          position: relative;
+          padding: 10px 0 14px;
+        }
+
+        /* fades match the bg exactly */
+        .fade-left, .fade-right {
           position: absolute;
-          top: 0;
-          width: 120px;
-          height: 100%;
-          z-index: 2;
+          top: 0; height: 100%;
+          width: 160px;
+          z-index: 5;
           pointer-events: none;
         }
+        .fade-left  { left:  0; background: linear-gradient(90deg,  #f8fafc 20%, transparent); }
+        .fade-right { right: 0; background: linear-gradient(270deg, #f8fafc 20%, transparent); }
 
-        .ticker-wrapper::before {
-          left: 0;
-          background: linear-gradient(90deg, #0f172a 0%, transparent 100%);
-        }
-
-        .ticker-wrapper::after {
-          right: 0;
-          background: linear-gradient(270deg, #0f172a 0%, transparent 100%);
-        }
-
-        .ticker-content {
+        /* faster — 25s */
+        .ticker-track {
           display: flex;
-          animation: scroll 60s linear infinite;
+          align-items: center;
+          animation: ticker-scroll 25s linear infinite;
           will-change: transform;
-        }
-
-        .ticker-content.paused {
-          animation-play-state: paused;
         }
 
         .ticker-item {
           flex-shrink: 0;
-          padding: 0 2.5rem;
           display: flex;
           align-items: center;
-          gap: 1rem;
-          transition: transform 0.3s ease;
+          padding: 0 24px;
+          gap: 24px;
         }
 
-        .ticker-item:hover {
-          transform: scale(1.05);
-        }
-
-        .logo-container {
-          width: 48px;
-          height: 48px;
-          background: white;
-          border-radius: 12px;
+        /* no border, no radius, no shadow — blends into bg */
+        .logo-card {
+          width: 140px;
+          height: 52px;
+          background: #f8fafc;
+          border-radius: 0;
+          border: none;
+          box-shadow: none;
           display: flex;
           align-items: center;
           justify-content: center;
-          padding: 8px;
-          box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-          transition: all 0.3s ease;
+          padding: 8px 12px;
+          overflow: hidden;
+          flex-shrink: 0;
         }
 
-        .ticker-item:hover .logo-container {
-          box-shadow: 0 6px 25px rgba(59, 130, 246, 0.4);
-          transform: translateY(-2px);
-        }
-
-        .logo-container img {
-          width: 100%;
-          height: 100%;
+        .logo-card img {
+          max-width: 112px;
+          max-height: 36px;
+          width: auto;
+          height: auto;
           object-fit: contain;
+          display: block;
+          filter: grayscale(15%) opacity(0.9);
+          transition: filter 0.25s, transform 0.25s;
         }
 
-        .trusted-badge {
-          animation: glow 3s ease-in-out infinite;
+        .logo-card:hover img {
+          filter: grayscale(0%) opacity(1);
+          transform: scale(1.05);
         }
 
-        .divider {
-          width: 2px;
-          height: 24px;
-          background: linear-gradient(180deg, transparent, #3b82f6, transparent);
+        /* thin vertical divider */
+        .sep {
+          width: 1px;
+          height: 28px;
+          background: #e2e8f0;
+          flex-shrink: 0;
+        }
+
+        /* badge */
+        .badge-wrap {
+          position: absolute;
+          left: 20px;
+          top: 50%;
+          transform: translateY(-50%);
+          z-index: 10;
+          display: none;
+        }
+        @media (min-width: 768px) { .badge-wrap { display: block; } }
+
+        .badge {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          background: #1d4ed8;
+          border-radius: 6px;
+          padding: 7px 13px;
+          box-shadow: 0 2px 12px rgba(29,78,216,0.25);
+        }
+        .badge-text {
+          font-size: 10px;
+          font-weight: 700;
+          color: #fff;
+          letter-spacing: 0.1em;
+          text-transform: uppercase;
         }
       `}</style>
 
-      <section className="ticker-wrapper w-full">
-        <div className="py-3 relative">
-          {/* Enhanced Trusted By Badge */}
-          <div className="trusted-badge absolute left-4 top-1/2 -translate-y-1/2 bg-gradient-to-r from-blue-600 to-blue-500 px-4 py-2 rounded-lg z-10 hidden md:block border border-blue-400">
-            <div className="flex items-center gap-2">
-              <svg className="w-4 h-4 text-yellow-300" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-              </svg>
-              <span className="text-white text-xs font-bold tracking-wider">TRUSTED BY</span>
+      <section className="ticker-section w-full">
+
+        <div className="ticker-header">
+          <div className="header-line" />
+          <span className="header-label">Our Prestigious Partners</span>
+          <div className="header-line right" />
+        </div>
+
+        <div className="ticker-body">
+          <div className="fade-left" />
+          <div className="fade-right" />
+
+          <div className="badge-wrap">
+            <div className="badge">
+              <span style={{ color: '#fde68a', fontSize: '12px' }}>★</span>
+              <span className="badge-text">Trusted By</span>
             </div>
           </div>
 
-          <div 
-            className={`ticker-content ${isPaused ? 'paused' : ''}`}
-            onMouseEnter={() => setIsPaused(true)}
-            onMouseLeave={() => setIsPaused(false)}
-          >
-            {duplicatedClients.map((client, index) => (
-              <div key={index} className="ticker-item">
-                <div className="logo-container">
-                  <img 
-                    src={getClearbitLogo(client.domain)}
-                    alt={`${client.name} logo`}
-                    onError={(e) => {
-                      // Fallback to Google favicon if Clearbit fails
-                      e.currentTarget.src = getGoogleFavicon(client.domain);
-                    }}
-                  />
+          <div className="ticker-track">
+            {duplicated.map((client, i) => (
+              <div key={i} className="ticker-item">
+                <div className="logo-card">
+                  <img src={client.logo} alt={client.name} />
                 </div>
-                <span className="text-white text-sm font-semibold whitespace-nowrap tracking-wide">
-                  {client.name}
-                </span>
-                <div className="divider"></div>
+                <div className="sep" />
               </div>
             ))}
           </div>
         </div>
+
       </section>
     </>
   );
