@@ -325,7 +325,7 @@ export default function AboutUs() {
                     </div>
                     <div>
                       <h4 className="text-base font-semibold text-gray-900">
-                        Ln. SENTHIL.K.CHETTIAR
+                        Ln. SENTHIL.K
                       </h4>
                       <p className="text-xs text-gray-600">Founder & Managing Director</p>
                       <p className="text-xs text-blue-600 mt-0.5">20+ Years of Industry Experience</p>

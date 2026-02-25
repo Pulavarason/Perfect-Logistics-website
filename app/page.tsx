@@ -10,15 +10,14 @@ import Gallery from "@/components/Gallery";
 export default function Home() {
   return (
     <>
-      
-      <Hero />
-      <About />
+      <div id="home"><Hero /></div>
+      <div id="about"><About /></div>
       <ClientTicker />
-      <Services />
+      <div id="services"><Services /></div>
       <Projects />
       <Gallery />
       <Reviews />
-      <Contact />
+      <div id="contact"><Contact /></div>
     </>
   );
 }

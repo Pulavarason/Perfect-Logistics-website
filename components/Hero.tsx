@@ -100,6 +100,15 @@ export default function Hero() {
       }
     })
   };
+// Add this helper function inside the Hero component (before return)
+const scrollToSection = (id: string) => {
+  const element = document.getElementById(id);
+  if (element) {
+    const navbarHeight = 64;
+    const offsetPosition = element.getBoundingClientRect().top + window.scrollY - navbarHeight;
+    window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
+  }
+};
 
   return (
     <>
@@ -260,7 +269,8 @@ export default function Hero() {
                 variants={fadeInUpVariants}
               >
                 <motion.button 
-                  className="group relative px-7 py-3.5 bg-blue-500 text-white font-semibold rounded-lg overflow-hidden shadow-lg"
+               onClick={() => scrollToSection('contact')}
+                className="group relative px-7 py-3.5 bg-blue-500 text-white font-semibold rounded-lg overflow-hidden shadow-lg"
                   whileHover={{ scale: 1.05, boxShadow: "0 20px 40px rgba(59, 130, 246, 0.4)" }}
                   whileTap={{ scale: 0.98 }}
                   transition={{ type: "spring", stiffness: 400, damping: 25 }}
@@ -287,6 +297,7 @@ export default function Hero() {
                 </motion.button>
                 
                 <motion.button 
+                 onClick={() => scrollToSection('services')}
                   className="px-7 py-3.5 bg-white/10 backdrop-blur-md text-white font-semibold rounded-lg border border-white/30 shadow-lg"
                   whileHover={{ 
                     scale: 1.05, 

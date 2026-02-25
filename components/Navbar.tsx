@@ -25,26 +25,26 @@ export default function Navbar() {
   ];
 
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
-    e.preventDefault();
-    setActiveLink(id);
-    setIsMobileMenuOpen(false);
+  e.preventDefault();
+  setActiveLink(id);
+  setIsMobileMenuOpen(false);
 
-    // Small delay to ensure mobile menu closes first
-    setTimeout(() => {
+  // Wait for any re-renders to settle before scrolling
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
       const element = document.getElementById(id);
       if (element) {
-        const navbarHeight = 64; // Fixed navbar height
+        const navbarHeight = 64;
         const elementPosition = element.getBoundingClientRect().top;
         const offsetPosition = elementPosition + window.scrollY - navbarHeight;
-
         window.scrollTo({
           top: offsetPosition,
           behavior: 'smooth'
         });
       }
-    }, 100);
-  };
-
+    });
+  });
+};
   return (
     <>
       <style jsx>{`

@@ -1054,12 +1054,18 @@ export default function Services() {
           >
             <h3 className="text-2xl font-bold text-gray-900 mb-3">Need a Custom Solution?</h3>
             <p className="text-gray-600 mb-6 max-w-2xl mx-auto text-sm">We look forward to working with you on a long-term basis. Contact us for detailed discussions about your specific requirements.</p>
-            <button className="px-8 py-4 bg-blue-500 text-white font-medium rounded-lg shadow-lg hover:bg-blue-600 hover:shadow-xl transform hover:scale-105 transition-all duration-300 flex items-center justify-center space-x-2 mx-auto">
-              <span>REQUEST A QUOTE</span>
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-              </svg>
-            </button>
+          <button
+  onClick={() => {
+    const el = document.getElementById('contact');
+    if (el) el.scrollIntoView({ behavior: 'smooth' });
+  }}
+  className="px-8 py-4 bg-blue-500 text-white font-medium rounded-lg shadow-lg hover:bg-blue-600 hover:shadow-xl transform hover:scale-105 transition-all duration-300 flex items-center justify-center space-x-2 mx-auto"
+>
+  <span>REQUEST A QUOTE</span>
+  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+  </svg>
+</button>
           </div>
 
         </div>
